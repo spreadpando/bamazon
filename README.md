@@ -1,6 +1,6 @@
 # bamazon
 ----------
-## mysql inventory CLI
+## MySQL inventory CLI
 - ~ git clone
 - ~ cd bamazon
 - ~ npm install
