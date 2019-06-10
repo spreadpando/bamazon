@@ -21,10 +21,12 @@ connection.connect(function (err) {
 });
 
 // display available products
+let products = [];
 function renderStore() {
     connection.query('SELECT * from products', function (err, result) {
         for (let i = 0; i < result.length; i++) {
             console.log(`product key: ${result[i].item_id} | ${result[i].product_name} | $${result[i].price}`)
+            products.push(result[i]);
         };
         promptSale();
     });
@@ -35,8 +37,27 @@ function promptSale() {
         { type: 'number', name: 'product_key', message: 'enter the product key you would like to order' },
         { type: 'number', name: 'quantity', message: 'what quantity would you like to order?' }
     ]).then(function (response) {
-        console.log(response.product_key);
-        console.log(response.quantity);
+        let pkey = response.product_key;
+        let quantity = response.stock_quantity;
+        let found = false;
+        for (let i = 0; i < products.length; i++) {
+            // check which product is selected
+            if (products[i].item_id === pkey) {
+                found = true;
+                if (products[i].stock_quantity <= quantity) {
+                    //place order
+                } else {
+                    console.log(':::::  out of stock  :::::');
+                }
+            }
+
+        }
+        if (found === false) {
+            console.log(':::::  that product key did not match any products  :::::');
+        }
+
+
+
     })
 }
 
