@@ -28,7 +28,7 @@ function renderStore() {
             console.log(`product key: ${result[i].item_id} | ${result[i].product_name} | $${result[i].price}`)
             products.push(result[i]);
         };
-        promptSale();
+
     });
 };
 
@@ -38,14 +38,24 @@ function promptSale() {
         { type: 'number', name: 'quantity', message: 'what quantity would you like to order?' }
     ]).then(function (response) {
         let pkey = response.product_key;
-        let quantity = response.stock_quantity;
+        let quantity = response.quantity;
         let found = false;
+        console.log(products);
         for (let i = 0; i < products.length; i++) {
             // check which product is selected
             if (products[i].item_id === pkey) {
                 found = true;
-                if (products[i].stock_quantity <= quantity) {
+                if (products[i].stock_quantity > quantity) {
                     //place order
+                    let set = products[i].stock_quantity - quantity;
+                    let where = 'item_id = ' + products[i].item_id;
+                    let query = 'UPDATE products SET stock_quantity = ' + set + ' WHERE ' + where;
+                    connection.query(query, function (err, result) {
+                        if (err) {
+                            throw err;
+                        }
+                        renderStore();
+                    })
                 } else {
                     console.log(':::::  out of stock  :::::');
                 }
@@ -62,3 +72,4 @@ function promptSale() {
 }
 
 renderStore();
+promptSale();
