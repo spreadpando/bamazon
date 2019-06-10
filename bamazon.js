@@ -17,7 +17,6 @@ connection.connect(function (err) {
         console.error("error connecting: " + err.stack);
         return;
     }
-    console.log("connected as id " + connection.threadId);
 });
 
 // display available products
@@ -93,6 +92,7 @@ function promptSale() {
         let pkey = response.product_key;
         let quantity = response.quantity;
         let found = false;
+        let ordered = false;
         for (let i = 0; i < products.length; i++) {
             // check which product is selected
             if (products[i].item_id === pkey) {
@@ -106,24 +106,29 @@ function promptSale() {
                         if (err) {
                             throw err;
                         }
-                        console.log(`
-                        your order of :
-                         ${quantity} ${products[i].product_name}(s) 
-                        has been completed
-                        `);
-                        promptChoice();
+                        ordered = true;
+                        if (found === false) {
+                            console.log(':::::  that product key did not match any products  :::::');
+                            promptSale();
+                        }
+                        if (found == true && ordered == false) {
+                            console.log(':::::  out of stock  :::::');
+                            promptSale();
+                        }
+                        if (found && ordered) {
+                            console.log(`
+                                        your order of :
+                                        ${quantity} ${products[i].product_name}(s) 
+                                        has been completed
+                                        `);
+                            promptChoice();
+                        }
                     })
-                } else {
-                    console.log(':::::  out of stock  :::::');
-                    promptChoice();
                 }
             }
 
         }
-        if (found === false) {
-            console.log(':::::  that product key did not match any products  :::::');
-            promptSale();
-        }
+
 
 
 
